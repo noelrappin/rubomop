@@ -20,7 +20,7 @@ module Rubomop
       raw_lines.each { parse_one_line(_1) }
     end
 
-    OFFENSE_COUNT_REGEX = /\A# Offense count: (\d)/
+    OFFENSE_COUNT_REGEX = /\A# Offense count: (\d*)/
     COP_NAME_REGEX = /\A(.*):/
     FILE_NAME_REGEX = /- '(.*)'/
     AUTOCORRECT_REGEX = /\A# Cop supports --auto-correct./

@@ -81,6 +81,16 @@ module Rubomop
         expect(cop.offense_count).to eq(2)
       end
 
+      it "parses an offense count line with a multi digit count" do
+        cop.parse_one_line("# Offense count: 23")
+        expect(cop.offense_count).to eq(23)
+      end
+
+      it "parses an offense count line with a three digit count" do
+        cop.parse_one_line("# Offense count: 233")
+        expect(cop.offense_count).to eq(233)
+      end
+
       it "parses a name line" do
         cop.parse_one_line("Lint/DuplicateMethods:")
         expect(cop.name).to eq("Lint/DuplicateMethods")
