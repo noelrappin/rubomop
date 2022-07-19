@@ -1,6 +1,6 @@
 module Rubomop
   class Runner
-    attr_accessor :number, :autocorrect_only, :run_rubocop, :filename
+    attr_accessor :number, :autocorrect_only, :run_rubocop, :filename, :todo
     NUM_STRING = "Number of cleanups to perform (default: 10)"
     AUTOCORRECT_STRING = "Only clean autocorrectable cops (default)"
     NO_AUTOCORRECT_STRING = "Clean all cops (not default)"
@@ -13,6 +13,7 @@ module Rubomop
       @autocorrect_only = true
       @run_rubocop = true
       @filename = ".rubocop_todo.yml"
+      @todo = nil
     end
 
     def execute(args)
@@ -54,9 +55,23 @@ module Rubomop
       number.times do
         delete_options = todo.delete_options(autocorrect_only: autocorrect_only)
         next if delete_options.empty?
+        print "Deleting #{delete_options.filename} from #{delete_options.task.name}"
         todo.delete!(delete_options.sample)
       end
+      backup_existing_file
+      save_new_file
       rubocop_runner
+    end
+
+    def backup_existing_file
+      FileUtils.rm("#{filename}.bak")
+      FileUtils.mv(filename, "#{filename}.bak")
+    end
+
+    def save_new_file
+      File.open(filename, "w") do|f|
+        f.write(todo.output)
+      end
     end
 
     def rubocop_runner

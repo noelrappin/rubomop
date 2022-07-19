@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "fileutils"
 require "optparse"
 require "active_support/core_ext/array"
 require_relative "rubomop/cop"
