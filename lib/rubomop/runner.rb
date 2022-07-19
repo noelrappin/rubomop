@@ -52,7 +52,7 @@ module Rubomop
 
     def run
       self.todo = TodoFile.new(filename: filename).parse
-      number.times do|i|
+      number.times do |i|
         delete_options = todo.delete_options(autocorrect_only: autocorrect_only)
         next if delete_options.empty?
         object_to_delete = delete_options.sample
@@ -70,9 +70,7 @@ module Rubomop
     end
 
     def save_new_file
-      File.open(filename, "w") do|f|
-        f.write(todo.output)
-      end
+      File.write(filename, todo.output)
     end
 
     def rubocop_runner
