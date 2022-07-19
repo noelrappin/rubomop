@@ -5,6 +5,15 @@ Rubomop cleans up after your Rubocop.
 It allows you to randomly delete items from your `rubocop_todo.yml` file and
 then rerun Rubocop.
 
+Please note -- this is probably something you should do with caution, if you
+run this, make sure you inspect the changes before you acutally commit them
+back to your repo. Run your tests. 
+
+This could definitely mess things up if the Rubocop autocorrects change the
+meaning of your code
+
+Use at your own risk
+
 Options include
 
 * The number of items to delete (default: 10)
@@ -18,6 +27,13 @@ Add this line to your application's Gemfile:
 ```ruby
 gem "rubomop"
 ```
+
+(Well, until I actually submit it, it's)
+
+```
+gem "rubocop", github: "noelrappin/rubomop"
+```
+
 
 And then execute:
 
