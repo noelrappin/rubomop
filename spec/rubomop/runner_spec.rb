@@ -19,12 +19,12 @@ module Rubomop
       end
 
       it "parses autocorrect long" do
-        runner.parse(["--autocorrect_only"])
+        runner.parse(["--autocorrect-only"])
         expect(runner.autocorrect_only).to eq(true)
       end
 
       it "parses no autocorrect long" do
-        runner.parse(["--no_autocorrect_only"])
+        runner.parse(["--no_autocorrect-only"])
         expect(runner.autocorrect_only).to eq(false)
       end
 
@@ -34,12 +34,12 @@ module Rubomop
       end
 
       it "parses autocorrect long" do
-        runner.parse(["--run_rubocop"])
+        runner.parse(["--run-rubocop"])
         expect(runner.run_rubocop).to eq(true)
       end
 
       it "parses no autocorrect long" do
-        runner.parse(["--no_run_rubocop"])
+        runner.parse(["--no_run-rubocop"])
         expect(runner.run_rubocop).to eq(false)
       end
     end

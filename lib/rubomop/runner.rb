@@ -27,19 +27,19 @@ module Rubomop
         opts.on("-nNUMBER", "--number NUMBER", Integer, NUM_STRING) do |value|
           self.number = value
         end
-        opts.on("-a", "--autocorrect_only", AUTOCORRECT_STRING) do
+        opts.on("-a", "--autocorrect-only", AUTOCORRECT_STRING) do
           self.autocorrect_only = true
         end
-        opts.on("--no_autocorrect_only", NO_AUTOCORRECT_STRING) do
+        opts.on("--no_autocorrect-only", NO_AUTOCORRECT_STRING) do
           self.autocorrect_only = false
         end
-        opts.on("-r", "--run_rubocop", RUBOCOP_STRING) do
+        opts.on("-r", "--run-rubocop", RUBOCOP_STRING) do
           self.run_rubocop = true
         end
         opts.on("-fFILENAME", "--filename FILENAME", FILENAME_STRING) do |value|
           self.filename = value
         end
-        opts.on("--no_run_rubocop", NO_RUBOCOP_STRING) do
+        opts.on("--no-run-rubocop", NO_RUBOCOP_STRING) do
           self.run_rubocop = false
         end
         opts.on("-h", "--help", "Prints this help") do
