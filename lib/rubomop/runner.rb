@@ -51,13 +51,14 @@ module Rubomop
     end
 
     def run
-      self.todo = TodoFile.new(filename: filename).parse
+      self.todo = TodoFile.new(filename: filename)&.parse
+      return if todo.nil?
       number.times do |i|
-        delete_options = todo.delete_options(autocorrect_only: autocorrect_only)
+        delete_options = todo&.delete_options(autocorrect_only: autocorrect_only)
         next if delete_options.empty?
         object_to_delete = delete_options.sample
         print "#{i + 1}: Deleting #{object_to_delete[:file]} from #{object_to_delete[:cop].name}\n"
-        todo.delete!(object_to_delete)
+        todo&.delete!(object_to_delete)
       end
       backup_existing_file
       save_new_file
@@ -70,7 +71,7 @@ module Rubomop
     end
 
     def save_new_file
-      File.write(filename, todo.output)
+      File.write(filename, todo&.output || "")
     end
 
     def rubocop_runner
