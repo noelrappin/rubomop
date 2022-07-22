@@ -110,17 +110,12 @@ module Rubomop
       return if todo.nil?
       backup_existing_file
       mop.mop!
-      save_new_file
+      todo_file.save!
     end
 
     def backup_existing_file
       FileUtils.rm("#{filename}.bak") if File.exist?("#{filename}.bak")
       FileUtils.mv(filename, "#{filename}.bak")
-    end
-
-    def save_new_file
-      FileUtils.rm_f(filename)
-      File.write(filename, todo&.output || "")
     end
   end
 end

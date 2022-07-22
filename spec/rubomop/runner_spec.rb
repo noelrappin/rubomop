@@ -104,12 +104,17 @@ module Rubomop
     end
 
     describe "save file" do
+      before(:example) do
+        FileUtils.cp("spec/fixtures/sample_todo.yml", ".rubocop_todo.yml")
+      end
+
       after(:example) do
         FileUtils.rm(".rubocop_todo.yml")
       end
 
       it "saves a file" do
-        runner.save_new_file
+        runner.todo = TodoFile.new(filename: ".rubocop_todo.yml").parse
+        runner.todo.save!
         expect(File.exist?(".rubocop_todo.yml")).to be_truthy
       end
     end

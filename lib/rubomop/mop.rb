@@ -61,7 +61,8 @@ module Rubomop
     def mop_once!(delete_option)
       delete_option.print_message if verbose
       delete_option.delete!
-      todo_file.save_new_file
+      return unless run_rubocop
+      todo_file.save!
       delete_option.rubocop_runner
     end
 

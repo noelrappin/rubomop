@@ -27,5 +27,10 @@ module Rubomop
     def output
       output_lines.join("\n") + "\n"
     end
+
+    def save!
+      FileUtils.rm_f(filename)
+      File.write(filename, output || "")
+    end
   end
 end

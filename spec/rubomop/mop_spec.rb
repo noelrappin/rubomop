@@ -58,7 +58,9 @@ module Rubomop
       end
 
       it "calls if rubocop is true" do
+        mop.run_rubocop = true
         thing_to_delete.run_rubocop = true
+        allow(mop.todo_file).to receive(:save!)
         mop.mop_once!(thing_to_delete)
         expect(thing_to_delete).to have_received("system")
           .with("bundle exec rubocop app/controllers/sample_controller.rb -aD")
