@@ -76,6 +76,7 @@ module Rubomop
 
       def rubocop_runner
         return unless run_rubocop
+        print "bundle exec rubocop #{file} -aD\n"
         system("bundle exec rubocop #{file} -aD")
       end
     end
