@@ -110,7 +110,7 @@ module Rubomop
       return if todo.nil?
       backup_existing_file
       mop.mop!
-      todo_file.save!
+      todo&.save!
     end
 
     def backup_existing_file
