@@ -1,13 +1,14 @@
 module Rubomop
   class Mop
-    attr_accessor :todo_file, :number, :autocorrect_only
+    attr_accessor :todo_file, :number, :autocorrect_only, :run_rubocop
     attr_accessor :verbose, :only, :except, :block
 
-    def initialize(todo_file, number, autocorrect_only, verbose, only, except, blocklist)
+    def initialize(todo_file, number, autocorrect_only, verbose, run_rubocop, only, except, blocklist)
       @todo_file = todo_file
       @number = number
       @autocorrect_only = autocorrect_only
       @verbose = verbose
+      @run_rubocop = run_rubocop
       @only = only
       @except = except
       @block = blocklist
@@ -39,7 +40,7 @@ module Rubomop
     end
 
     def delete_options_for(cop)
-      cop.files.map { DeleteOption.new(cop, _1, verbose) }
+      cop.files.map { DeleteOption.new(cop, _1, verbose, run_rubocop) }
     end
 
     def log(message)
@@ -60,9 +61,10 @@ module Rubomop
     def mop_once!(delete_option)
       delete_option.print_message if verbose
       delete_option.delete!
+      delete_option.rubocop_runner
     end
 
-    DeleteOption = Struct.new(:cop, :file, :verbose) do
+    DeleteOption = Struct.new(:cop, :file, :verbose, :run_rubocop) do
       def print_message
         return unless verbose
         print "Deleting #{file} from #{cop.name}" if verbose
@@ -70,6 +72,11 @@ module Rubomop
 
       def delete!
         cop.delete!(file)
+      end
+
+      def rubocop_runner
+        return unless run_rubocop
+        system("bundle exec rubocop #{file} -aD")
       end
     end
   end

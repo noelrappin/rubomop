@@ -3,7 +3,7 @@ module Rubomop
     let(:filename) { "spec/fixtures/sample_todo.yml" }
     let(:todo) { TodoFile.new(filename: filename).parse }
     subject(:mop) do
-      described_class.new(todo, 2, true, false, [], [], [])
+      described_class.new(todo, 2, true, false, false, [], [], [])
     end
 
     describe "deletion objects" do
@@ -45,6 +45,29 @@ module Rubomop
         mop.mop!
         expect(mop.delete_options).to have(0).options
         expect(mop).to have_received(:mop_once!).exactly(4).times
+      end
+    end
+
+    describe "running rubocop" do
+      let(:thing_to_delete) do
+        mop.delete_options.find { _1[:file].end_with?("sample_controller.rb") }
+      end
+
+      before(:example) do
+        allow(thing_to_delete).to receive("system")
+      end
+
+      it "calls if rubocop is true" do
+        thing_to_delete.run_rubocop = true
+        mop.mop_once!(thing_to_delete)
+        expect(thing_to_delete).to have_received("system")
+          .with("bundle exec rubocop app/controllers/sample_controller.rb -aD")
+      end
+
+      it "does not call if rubocop is false" do
+        mop.run_rubocop = false
+        mop.mop_once!(thing_to_delete)
+        expect(thing_to_delete).not_to have_received("system")
       end
     end
 

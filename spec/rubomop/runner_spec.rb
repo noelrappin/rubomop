@@ -114,24 +114,6 @@ module Rubomop
       end
     end
 
-    describe "run rubocop" do
-      before(:example) do
-        allow(runner).to receive("system")
-      end
-
-      it "calls if rubocop is true" do
-        runner.run_rubocop = true
-        runner.rubocop_runner
-        expect(runner).to have_received("system").with("bundle exec rubocop -aD")
-      end
-
-      it "does not call if rubocop is false" do
-        runner.run_rubocop = false
-        runner.rubocop_runner
-        expect(runner).not_to have_received("system")
-      end
-    end
-
     describe "reads from a configuration file" do
       before(:example) do
         FileUtils.cp("spec/fixtures/sample_rubomop.yml", ".rubomop.yml")

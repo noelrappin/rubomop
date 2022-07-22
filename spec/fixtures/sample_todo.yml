@@ -25,5 +25,5 @@ Lint/DuplicateMethods:
 # Cop supports --auto-correct.
 Lint/RedundantStringCoercion:
   Exclude:
-    - 'app/controllers/sample_controller.rb'
-    - 'app/controllers/another_controller.rb'
+    - 'app/controllers/three_controller.rb'
+    - 'app/controllers/four_controller.rb'

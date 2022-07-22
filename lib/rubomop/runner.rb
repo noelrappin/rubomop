@@ -102,7 +102,7 @@ module Rubomop
     end
 
     def mop
-      Mop.new(todo, number, autocorrect_only, verbose, only, except, block)
+      Mop.new(todo, number, autocorrect_only, verbose, run_rubocop, only, except, block)
     end
 
     def run
@@ -111,7 +111,6 @@ module Rubomop
       mop.mop!
       backup_existing_file
       save_new_file
-      rubocop_runner
     end
 
     def backup_existing_file
@@ -121,12 +120,6 @@ module Rubomop
 
     def save_new_file
       File.write(filename, todo&.output || "")
-    end
-
-    def rubocop_runner
-      return unless run_rubocop
-      print "Running bundle exec rubocop -aD" if verbose
-      system("bundle exec rubocop -aD")
     end
   end
 end
