@@ -20,13 +20,13 @@ module Rubomop
     def accept?(delete_option)
       return false if autocorrect_only && !delete_option.cop.autocorrect
       unless except.empty?
-        return except.none? { %r{#{_1}}.match?(delete_option.cop.name) }
+        return except.none? { delete_option.cop.name.include?(_1) }
       end
       unless block.empty?
-        return block.none? { %r{#{_1}}.match?(delete_option.file) }
+        return block.none? { delete_option.file.include?(_1) }
       end
       unless only.empty?
-        return only.any? { %r{#{_1}}.match?(delete_option.cop.name) }
+        return only.any? { delete_option.cop.name.include?(_1) }
       end
       true
       # return true unless autocorrect_only

@@ -60,16 +60,16 @@ Usage: rubomop [options]
 ```
 
 The `--only` option allows you to limit cops to be selected from to only 
-those listed, the option can be a string or regular expression, and you can 
-have more than one. 
+those listed, the option can be a string and will match on substrings, and you 
+can have more than one. 
 
 The `--except` option allows you to specify a cop that should not be 
-selected, again, the option can be a string or a regular expression, and you 
+selected, again, the option can be a string and will match on substrings, and you 
 can have more than one. If a cop is in both the `--except` and `--include` 
 lists for some reasone, the except list wins and it's excluded.
 
 The `--block` option allows you to specify files that should not be selected 
-for any cops. The option can be a string or a regular expression and you can 
+for any cops. The option can be a string and will match on substrings and you can 
 have more than one. If a cop/file combination is in both the `--include` 
 cops list and the file `--block` list, the block wins and the file is not 
 included. 

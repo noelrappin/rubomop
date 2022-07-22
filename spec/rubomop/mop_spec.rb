@@ -61,9 +61,9 @@ module Rubomop
         expect(mop.accept?(bad_cop_option)).to be_falsey
       end
 
-      it "also lets you set include to a regex" do
+      it "also lets you set include to a substring" do
         mop.autocorrect_only = false
-        mop.only = %w[Layout/*]
+        mop.only = %w[Layout]
         expect(mop.accept?(good_cop_option)).to be_truthy
         expect(mop.accept?(bad_cop_option)).to be_falsey
       end
@@ -75,9 +75,9 @@ module Rubomop
         expect(mop.accept?(bad_cop_option)).to be_truthy
       end
 
-      it "also lets you set exclude to a regex" do
+      it "also lets you set exclude to a substring" do
         mop.autocorrect_only = false
-        mop.except = %w[Layout/*]
+        mop.except = %w[Layout]
         expect(mop.accept?(good_cop_option)).to be_falsey
         expect(mop.accept?(bad_cop_option)).to be_truthy
       end
@@ -98,11 +98,11 @@ module Rubomop
         expect(mop.accept?(good_cop_option)).to be_falsey
       end
 
-      it "excludes on a block file set to a regex" do
+      it "excludes on a block file set to a substring" do
         mop.autocorrect_only = false
         mop.only = %w[Layout/ArgumentAlignment]
         expect(mop.accept?(good_cop_option)).to be_truthy
-        mop.block = %w[oops*]
+        mop.block = %w[oops]
         expect(mop.accept?(good_cop_option)).to be_falsey
       end
     end
