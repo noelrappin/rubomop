@@ -57,10 +57,6 @@ module Rubomop
       result + files.map { "    - '#{_1}'"}
     end
 
-    def delete_options
-      files.map { {cop: self, file: _1} }
-    end
-
     def delete!(filename)
       files.delete(filename)
       self.offense_count -= 1

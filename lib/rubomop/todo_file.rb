@@ -27,15 +27,5 @@ module Rubomop
     def output
       output_lines.join("\n") + "\n"
     end
-
-    def delete_options(autocorrect_only: true)
-      result = cops.flat_map(&:delete_options)
-      result = result.select { _1[:cop].autocorrect } if autocorrect_only
-      result
-    end
-
-    def delete!(delete_option)
-      delete_option[:cop].delete!(delete_option[:file])
-    end
   end
 end

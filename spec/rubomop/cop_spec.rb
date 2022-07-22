@@ -28,12 +28,6 @@ module Rubomop
         expect(cop.output_lines).to eq(lines)
         expect(cop.output.split("\n")).to eq(lines)
       end
-
-      it "can create a list of deletion options" do
-        cop.parse
-        expect(cop.delete_options.map { _1[:file] }).to eq(cop.files)
-        expect(cop.delete_options.map { _1[:cop] }).to eq([cop, cop])
-      end
     end
 
     describe "with an autocorrect and comments" do

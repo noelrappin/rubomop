@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
+require "active_support/core_ext/array"
+require "awesome_print"
 require "fileutils"
 require "optparse"
-require "awesome_print"
-require "active_support/core_ext/array"
-require_relative "rubomop/cop"
-require_relative "rubomop/runner"
-require_relative "rubomop/todo_file"
-require_relative "rubomop/version"
+require "zeitwerk"
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 module Rubomop
   class Error < StandardError; end
