@@ -65,7 +65,7 @@ module Rubomop
     DeleteOption = Struct.new(:cop, :file, :verbose) do
       def print_message
         return unless verbose
-        "Deleting #{file} from #{cop.name}"
+        print "Deleting #{file} from #{cop.name}" if verbose
       end
 
       def delete!
