@@ -102,7 +102,7 @@ module Rubomop
     end
 
     def mop
-      Mop.new(todo, number, autocorrect_only, true)
+      Mop.new(todo, number, autocorrect_only, true, only, except, block)
     end
 
     def run

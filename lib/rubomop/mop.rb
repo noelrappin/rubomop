@@ -3,17 +3,14 @@ module Rubomop
     attr_accessor :todo_file, :number, :autocorrect_only
     attr_accessor :verbose, :only, :except, :block
 
-    def initialize(
-      todo_file, number, autocorrect_only, verbose,
-      only = [], except = [], block = []
-    )
+    def initialize(todo_file, number, autocorrect_only, verbose, only, except, blocklist)
       @todo_file = todo_file
       @number = number
       @autocorrect_only = autocorrect_only
       @verbose = verbose
       @only = only
       @except = except
-      @block = block
+      @block = blocklist
     end
 
     def cops

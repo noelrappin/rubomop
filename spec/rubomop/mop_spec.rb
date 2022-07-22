@@ -2,7 +2,9 @@ module Rubomop
   RSpec.describe Mop do
     let(:filename) { "spec/fixtures/sample_todo.yml" }
     let(:todo) { TodoFile.new(filename: filename).parse }
-    subject(:mop) { described_class.new(todo, 2, true, false) }
+    subject(:mop) do
+      described_class.new(todo, 2, true, false, [], [], [])
+    end
 
     describe "deletion objects" do
       it "creates a delete option from a cop" do
