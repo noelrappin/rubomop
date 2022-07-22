@@ -22,7 +22,7 @@ module Rubomop
       @filename = ".rubocop_todo.yml"
       @config = ".rubomop.yml"
       @todo = nil
-      @verbose = false
+      @verbose = true
       @options_from_command_line = []
       @only = []
       @except = []
