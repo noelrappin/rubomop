@@ -44,7 +44,7 @@ module Rubomop
 
     def log(message)
       return unless verbose
-      message
+      print message
     end
 
     def mop!
