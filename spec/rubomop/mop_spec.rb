@@ -45,5 +45,64 @@ module Rubomop
         expect(mop).to have_received(:mop_once!).exactly(4).times
       end
     end
+
+    describe "include / exclude of cops" do
+      let(:good_cop) { Cop.create_and_parse(["Layout/ArgumentAlignment:"]) }
+      let(:good_cop_option) { Mop::DeleteOption.new(good_cop, "oops.rb") }
+      let(:bad_cop) { Cop.create_and_parse(["Lint/DuplicateMethods:"]) }
+      let(:bad_cop_option) { Mop::DeleteOption.new(bad_cop, "") }
+
+      it "when include is set to a string, match based on include" do
+        mop.autocorrect_only = false
+        mop.only = %w[Layout/ArgumentAlignment]
+        expect(mop.accept?(good_cop_option)).to be_truthy
+        expect(mop.accept?(bad_cop_option)).to be_falsey
+      end
+
+      it "also lets you set include to a regex" do
+        mop.autocorrect_only = false
+        mop.only = %w[Layout/*]
+        expect(mop.accept?(good_cop_option)).to be_truthy
+        expect(mop.accept?(bad_cop_option)).to be_falsey
+      end
+
+      it "when exclude is set, exclude based on string" do
+        mop.autocorrect_only = false
+        mop.except = %w[Layout/ArgumentAlignment]
+        expect(mop.accept?(good_cop_option)).to be_falsey
+        expect(mop.accept?(bad_cop_option)).to be_truthy
+      end
+
+      it "also lets you set exclude to a regex" do
+        mop.autocorrect_only = false
+        mop.except = %w[Layout/*]
+        expect(mop.accept?(good_cop_option)).to be_falsey
+        expect(mop.accept?(bad_cop_option)).to be_truthy
+      end
+
+      it "excludes if both exclude and include are set" do
+        mop.autocorrect_only = false
+        mop.only = %w[Layout/ArgumentAlignment]
+        expect(mop.accept?(good_cop_option)).to be_truthy
+        mop.except = %w[Layout/ArgumentAlignment]
+        expect(mop.accept?(good_cop_option)).to be_falsey
+      end
+
+      it "excludes on a block file set to a string" do
+        mop.autocorrect_only = false
+        mop.only = %w[Layout/ArgumentAlignment]
+        expect(mop.accept?(good_cop_option)).to be_truthy
+        mop.block = %w[oops.rb]
+        expect(mop.accept?(good_cop_option)).to be_falsey
+      end
+
+      it "excludes on a block file set to a regex" do
+        mop.autocorrect_only = false
+        mop.only = %w[Layout/ArgumentAlignment]
+        expect(mop.accept?(good_cop_option)).to be_truthy
+        mop.block = %w[oops*]
+        expect(mop.accept?(good_cop_option)).to be_falsey
+      end
+    end
   end
 end

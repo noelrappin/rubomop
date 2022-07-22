@@ -55,6 +55,36 @@ module Rubomop
         runner.parse(["--filename=todo.yml"])
         expect(runner.filename).to eq("todo.yml")
       end
+
+      it "parses only list" do
+        runner.parse(["--only=Lint*"])
+        expect(runner.only).to eq(%w[Lint*])
+      end
+
+      it "parses only list with multiples" do
+        runner.parse(%w[--only=Lint* --only=Layout])
+        expect(runner.only).to eq(%w[Lint* Layout])
+      end
+
+      it "parses except list" do
+        runner.parse(["--except=Lint*"])
+        expect(runner.except).to eq(%w[Lint*])
+      end
+
+      it "parses only list with multiples" do
+        runner.parse(%w[--except=Lint* --except=Layout])
+        expect(runner.except).to eq(%w[Lint* Layout])
+      end
+
+      it "parses block list" do
+        runner.parse(["--block=oops*"])
+        expect(runner.block).to eq(%w[oops*])
+      end
+
+      it "parses block list with multiples" do
+        runner.parse(%w[--block=oops* --block=controller*])
+        expect(runner.block).to eq(%w[oops* controller*])
+      end
     end
 
     describe "backup existing file" do
@@ -117,6 +147,7 @@ module Rubomop
         expect(runner.number).to eq(20)
         expect(runner.autocorrect_only).to be_falsey
         expect(runner.run_rubocop).to be_falsey
+        expect(runner.only).to eq(%w[Lint Layout])
       end
 
       it "skips if the configuration file has a bad key" do

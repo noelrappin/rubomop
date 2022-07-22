@@ -2,6 +2,7 @@ module Rubomop
   class Runner
     attr_accessor :number, :autocorrect_only, :run_rubocop
     attr_accessor :filename, :todo, :verbose, :config, :options_from_command_line
+    attr_accessor :only, :except, :block
 
     NUM_STRING = "Number of cleanups to perform (default: 10)"
     AUTOCORRECT_STRING = "Only clean autocorrectable cops (default)"
@@ -10,6 +11,9 @@ module Rubomop
     NO_RUBOCOP_STRING = "Don't run rubocop -aD after (not default)"
     FILENAME_STRING = "Name of todo file (default: ./.rubocop_todo.yml)"
     CONFIG_STRING = "Name of optional config file (default: .rubomop.yml)"
+    ONLY_STRING = "String or regex of cops to limit removal do, can have multiple"
+    EXCEPT_STRING = "String or regex of cops to not remove from, can have multiple"
+    BLOCK_STRING = "String or regex of files to not touch, can have multiple"
 
     def initialize
       @number = 10
@@ -20,6 +24,9 @@ module Rubomop
       @todo = nil
       @verbose = false
       @options_from_command_line = []
+      @only = []
+      @except = []
+      @block = []
     end
 
     def execute(args)
@@ -73,6 +80,18 @@ module Rubomop
         opts.on("-cCONFIG_FILE", "--config=CONFIG_FILE", CONFIG_STRING) do |value|
           self.config = value
           @options_from_command_line << "config"
+        end
+        opts.on("--only=ONLY", ONLY_STRING) do |value|
+          only << value
+          @options_from_command_line << "only"
+        end
+        opts.on("--except=EXCEPT", ONLY_STRING) do |value|
+          except << value
+          @options_from_command_line << "except"
+        end
+        opts.on("--block=BLOCK", BLOCK_STRING) do |value|
+          block << value
+          @options_from_command_line << "block"
         end
         opts.on("-h", "--help", "Prints this help") do
           puts opts

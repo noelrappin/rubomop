@@ -3,7 +3,7 @@
 ## [0.2.0] - 2022-07-22
 
 - Adds for a .rubomop.yml file with configuration options
-- Command line switch to override config file options
+- Command line switch to override config file name
 - Allows for only/except for specific cops by name or pattern 
 - Allows for excluding specific file patterns from being changed
 
