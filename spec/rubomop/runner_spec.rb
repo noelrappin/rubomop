@@ -45,6 +45,16 @@ module Rubomop
         runner.parse(["--no_run-rubocop"])
         expect(runner.run_rubocop).to eq(false)
       end
+
+      it "parses filename" do
+        runner.parse(["-ftodo.yml"])
+        expect(runner.filename).to eq("todo.yml")
+      end
+
+      it "parses filename long" do
+        runner.parse(["--filename=todo.yml"])
+        expect(runner.filename).to eq("todo.yml")
+      end
     end
 
     describe "backup existing file" do
@@ -89,6 +99,56 @@ module Rubomop
         runner.run_rubocop = false
         runner.rubocop_runner
         expect(runner).not_to have_received("system")
+      end
+    end
+
+    describe "reads from a configuration file" do
+      before(:example) do
+        FileUtils.cp("spec/fixtures/sample_rubomop.yml", ".rubomop.yml")
+      end
+
+      after(:example) do
+        FileUtils.rm_f(".rubomop.yml")
+        FileUtils.rm_f("mops.yml")
+      end
+
+      it "reads from the configuration file" do
+        runner.load_from_file
+        expect(runner.number).to eq(20)
+        expect(runner.autocorrect_only).to be_falsey
+        expect(runner.run_rubocop).to be_falsey
+      end
+
+      it "skips if the configuration file has a bad key" do
+        File.open(".rubomop.yml", "a") do |f|
+          f << "nothing: false"
+        end
+        runner.load_from_file
+        expect(runner.number).to eq(20)
+      end
+
+      it "is fine if the file doesn't exist" do
+        FileUtils.rm_f(".rubomop.yml")
+        runner.load_from_file
+        expect(runner.number).to eq(10)
+      end
+
+      it "it works if the file is malformed" do
+        FileUtils.rm_f(".rubomop.yml")
+        FileUtils.cp("spec/fixtures/bad_rubomop.yml", ".rubomop.yml")
+        runner.load_from_file
+        expect(runner.number).to eq(10)
+      end
+
+      it "takes an option to locate the configuration file" do
+        FileUtils.mv(".rubomop.yml", "mops.yml")
+        runner.load_options(["--config=mops.yml"])
+        expect(runner.number).to eq(20)
+      end
+
+      it "command line options win" do
+        runner.load_options(["-n30"])
+        expect(runner.number).to eq(30)
       end
     end
   end

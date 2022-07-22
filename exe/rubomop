@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
-require "rubomop"
+# require "rubomop"
+require_relative "../lib/rubomop"
 
 Rubomop::Runner.new.execute(ARGV)
