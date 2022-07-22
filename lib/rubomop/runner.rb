@@ -41,7 +41,7 @@ module Rubomop
 
     def load_from_file
       return unless File.exist?(config)
-      file_options = YAML.safe_load_file(config)
+      file_options = YAML.safe_load(File.read(config))
       file_options.each do |key, value|
         next if options_from_command_line.include?(key)
         send("#{key.underscore}=", value) if respond_to?("#{key.underscore}=")
