@@ -108,8 +108,8 @@ module Rubomop
     def run
       self.todo = TodoFile.new(filename: filename)&.parse
       return if todo.nil?
-      mop.mop!
       backup_existing_file
+      mop.mop!
       save_new_file
     end
 
@@ -119,6 +119,7 @@ module Rubomop
     end
 
     def save_new_file
+      FileUtils.rm_f(filename)
       File.write(filename, todo&.output || "")
     end
   end

@@ -61,6 +61,7 @@ module Rubomop
     def mop_once!(delete_option)
       delete_option.print_message if verbose
       delete_option.delete!
+      todo_file.save_new_file
       delete_option.rubocop_runner
     end
 
@@ -76,7 +77,7 @@ module Rubomop
 
       def rubocop_runner
         return unless run_rubocop
-        print "bundle exec rubocop #{file} -aD\n"
+        print "\nbundle exec rubocop #{file} -aD\n"
         system("bundle exec rubocop #{file} -aD")
       end
     end
