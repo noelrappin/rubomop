@@ -81,9 +81,9 @@ different location with the `-c` option from the command line.
 number: 10
 autocorrect-only: true
 only:
-  - Lint*
+  - Lint
 block: 
-  - oops*
+  - oops
 ```
 
 If an option is set via the config file and the command line, the command 
