@@ -63,6 +63,12 @@ module Rubomop
         cop.parse
         cop.delete!("app/controllers/sample_controller.rb")
         expect(cop.files).to eq(%w[app/controllers/another_controller.rb])
+        expect(cop.offense_count).to eq(2)
+      end
+
+      it "subtracts a given file with offense" do
+        cop.parse
+        cop.subtract!(1)
         expect(cop.offense_count).to eq(1)
       end
     end

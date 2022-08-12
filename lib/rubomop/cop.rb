@@ -59,7 +59,10 @@ module Rubomop
 
     def delete!(filename)
       files.delete(filename)
-      self.offense_count -= 1
+    end
+
+    def subtract!(offense_count)
+      self.offense_count -= offense_count
     end
   end
 end

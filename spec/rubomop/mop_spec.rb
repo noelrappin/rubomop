@@ -54,7 +54,7 @@ module Rubomop
       end
 
       before(:example) do
-        allow(thing_to_delete).to receive("system")
+        allow(IO).to receive("popen")
       end
 
       it "calls if rubocop is true" do
@@ -62,14 +62,29 @@ module Rubomop
         thing_to_delete.run_rubocop = true
         allow(mop.todo_file).to receive(:save!)
         mop.mop_once!(thing_to_delete)
-        expect(thing_to_delete).to have_received("system")
+        expect(IO).to have_received("popen")
           .with("bundle exec rubocop app/controllers/sample_controller.rb -aD")
       end
 
       it "does not call if rubocop is false" do
         mop.run_rubocop = false
         mop.mop_once!(thing_to_delete)
-        expect(thing_to_delete).not_to have_received("system")
+        expect(IO).not_to have_received("popen")
+      end
+
+      it "parses the result of a rubocop" do
+        rubocop_string = "\nsomething\n\n1 file inspected, 14 offenses detected, 14 offenses corrected"
+        expect(thing_to_delete.parseIo(rubocop_string)).to eq(14)
+      end
+
+      it "parses the result of a single error rubocop" do
+        rubocop_string = "\nsomething\n\n1 file inspected, 1 offense detected, 1 offense corrected"
+        expect(thing_to_delete.parseIo(rubocop_string)).to eq(1)
+      end
+
+      it "parses the result of bad result" do
+        rubocop_string = "\nsomething\n\nglorp"
+        expect(thing_to_delete.parseIo(rubocop_string)).to eq(0)
       end
     end
 

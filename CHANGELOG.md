@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.3.0] - 2022-08-12
+
+- More accurately udpate offense count in todo file after running rubocop
+
 ## [0.2.0] - 2022-07-22
 
 - Adds for a .rubomop.yml file with configuration options

@@ -3,6 +3,7 @@
 require "rubomop"
 require "rspec/collection_matchers"
 require "awesome_print"
+require "stringio"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

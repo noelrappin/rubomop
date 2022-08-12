@@ -63,7 +63,8 @@ module Rubomop
       delete_option.delete!
       return unless run_rubocop
       todo_file.save!
-      delete_option.rubocop_runner
+      offense_count = delete_option.rubocop_runner || 0
+      delete_option.subtract!(offense_count)
     end
 
     DeleteOption = Struct.new(:cop, :file, :verbose, :run_rubocop) do
@@ -76,10 +77,25 @@ module Rubomop
         cop.delete!(file)
       end
 
+      def subtract!(offense_count)
+        cop.subtract!(offense_count)
+      end
+
       def rubocop_runner
         return unless run_rubocop
         print "\nbundle exec rubocop #{file} -aD\n"
-        system("bundle exec rubocop #{file} -aD")
+        IO.popen("bundle exec rubocop #{file} -aD") do |io|
+          result_string = io.read
+          puts result_string.split("\n").last
+          puts "\n"
+          parseIo(result_string)
+        end
+      end
+
+      def parseIo(string)
+        match_data = string.match(/(\d*) offense(s?) corrected/)
+        return 0 if match_data.nil?
+        match_data[1].to_i
       end
     end
   end
