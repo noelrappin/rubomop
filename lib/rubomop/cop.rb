@@ -54,7 +54,7 @@ module Rubomop
       result += comments
       result << "#{name}:"
       result << "  Exclude:"
-      result + files.map { "    - '#{_1}'"}
+      result + files.map { "    - '#{_1}'" }
     end
 
     def delete!(filename)

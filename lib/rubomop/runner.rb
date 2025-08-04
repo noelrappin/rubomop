@@ -1,11 +1,11 @@
 module Rubomop
   class Runner
     attr_accessor :number, :autocorrect_only, :run_rubocop
-    attr_accessor :filename, :todo, :verbose, :config, :options_from_command_line
-    attr_accessor :only, :except, :block
+    attr_accessor :filename, :todo_file, :verbose, :config, :options_from_command_line
+    attr_accessor :only, :except, :blocklist
 
     NUM_STRING = "Number of cleanups to perform (default: 10)"
-    AUTOCORRECT_STRING = "Only clean autocorrectable cops (default)"
+    AUTOCORRECT_STRING = "Only clean auto-correctable cops (default)"
     NO_AUTOCORRECT_STRING = "Clean all cops (not default)"
     RUBOCOP_STRING = "Run rubocop -aD after (default)"
     NO_RUBOCOP_STRING = "Don't run rubocop -aD after (not default)"
@@ -21,12 +21,12 @@ module Rubomop
       @run_rubocop = true
       @filename = ".rubocop_todo.yml"
       @config = ".rubomop.yml"
-      @todo = nil
+      @todo_file = TodoFile.new(filename: @filename)
       @verbose = true
       @options_from_command_line = []
       @only = []
       @except = []
-      @block = []
+      @blocklist = []
     end
 
     def execute(args)
@@ -41,7 +41,7 @@ module Rubomop
 
     def load_from_file
       return unless File.exist?(config)
-      file_options = YAML.safe_load(File.read(config))
+      file_options = YAML.safe_load_file(config)
       file_options.each do |key, value|
         next if options_from_command_line.include?(key)
         send("#{key.underscore}=", value) if respond_to?("#{key.underscore}=")
@@ -90,7 +90,7 @@ module Rubomop
           @options_from_command_line << "except"
         end
         opts.on("--block=BLOCK", BLOCK_STRING) do |value|
-          block << value
+          blocklist << value
           @options_from_command_line << "block"
         end
         opts.on("-h", "--help", "Prints this help") do
@@ -102,15 +102,24 @@ module Rubomop
     end
 
     def mop
-      Mop.new(todo, number, autocorrect_only, verbose, run_rubocop, only, except, block)
+      RandomMop.new(
+        todo_file:,
+        number:,
+        autocorrect_only:,
+        verbose:,
+        run_rubocop:,
+        only:,
+        except:,
+        blocklist:
+      )
     end
 
     def run
-      self.todo = TodoFile.new(filename: filename)&.parse
-      return if todo.nil?
+      self.todo_file = TodoFile.new(filename: filename)&.parse
+      return if todo_file.nil?
       backup_existing_file
       mop.mop!
-      todo&.save!
+      todo_file&.save!
     end
 
     def backup_existing_file

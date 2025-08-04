@@ -78,12 +78,12 @@ module Rubomop
 
       it "parses block list" do
         runner.parse(["--block=oops*"])
-        expect(runner.block).to eq(%w[oops*])
+        expect(runner.blocklist).to eq(%w[oops*])
       end
 
       it "parses block list with multiples" do
         runner.parse(%w[--block=oops* --block=controller*])
-        expect(runner.block).to eq(%w[oops* controller*])
+        expect(runner.blocklist).to eq(%w[oops* controller*])
       end
     end
 
@@ -113,8 +113,8 @@ module Rubomop
       end
 
       it "saves a file" do
-        runner.todo = TodoFile.new(filename: ".rubocop_todo.yml").parse
-        runner.todo.save!
+        runner.todo_file = TodoFile.new(filename: ".rubocop_todo.yml").parse
+        runner.todo_file.save!
         expect(File.exist?(".rubocop_todo.yml")).to be_truthy
       end
     end

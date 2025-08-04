@@ -1,18 +1,13 @@
 module Rubomop
-  class Mop
-    attr_accessor :todo_file, :number, :autocorrect_only, :run_rubocop
-    attr_accessor :verbose, :only, :except, :block
-
-    def initialize(todo_file, number, autocorrect_only, verbose, run_rubocop, only, except, blocklist)
-      @todo_file = todo_file
-      @number = number
-      @autocorrect_only = autocorrect_only
-      @verbose = verbose
-      @run_rubocop = run_rubocop
-      @only = only
-      @except = except
-      @block = blocklist
-    end
+  class RandomMop < Literal::Object
+    prop :todo_file, TodoFile, reader: :public, writer: :public
+    prop :number, Integer, reader: :public, writer: :public
+    prop :autocorrect_only, _Boolean, reader: :public, writer: :public
+    prop :verbose, _Boolean, reader: :public, writer: :public
+    prop :run_rubocop, _Boolean, reader: :public, writer: :public
+    prop :only, _Array(String), reader: :public, writer: :public
+    prop :except, _Array(String), reader: :public, writer: :public
+    prop :blocklist, _Array(String), reader: :public, writer: :public
 
     def cops
       todo_file.cops
@@ -23,8 +18,8 @@ module Rubomop
       unless except.empty?
         return except.none? { delete_option.cop.name.include?(_1) }
       end
-      unless block.empty?
-        return block.none? { delete_option.file.include?(_1) }
+      unless blocklist.empty?
+        return blocklist.none? { delete_option.file.include?(_1) }
       end
       unless only.empty?
         return only.any? { delete_option.cop.name.include?(_1) }
@@ -88,11 +83,11 @@ module Rubomop
           result_string = io.read
           puts result_string.split("\n").last
           puts "\n"
-          parseIo(result_string)
+          parse_io(result_string)
         end
       end
 
-      def parseIo(string)
+      def parse_io(string)
         match_data = string.match(/(\d*) offense(s?) corrected/)
         return 0 if match_data.nil?
         match_data[1].to_i
