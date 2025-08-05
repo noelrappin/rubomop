@@ -85,6 +85,24 @@ module Rubomop
         runner.parse(%w[--block=oops* --block=controller*])
         expect(runner.blocklist).to eq(%w[oops* controller*])
       end
+
+      it "parses the name" do
+        runner.parse(["--name=Lint/RedundantStringCoercion"])
+        expect(runner.name).to eq("Lint/RedundantStringCoercion")
+        expect(runner.mop.name).to eq("Lint/RedundantStringCoercion")
+      end
+    end
+
+    describe "Mop choice" do
+      it "chooses a random mop if there is no name" do
+        runner.parse(["-n2"])
+        expect(runner.mop).to be_a(RandomMop)
+      end
+
+      it "chooses a named mop if there is a name" do
+        runner.parse(["--name=Lint/RedundantStringCoercion"])
+        expect(runner.mop).to be_a(NamedMop)
+      end
     end
 
     describe "backup existing file" do

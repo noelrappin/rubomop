@@ -1,19 +1,18 @@
 module Rubomop
-  class Cop
-    attr_accessor :offense_count, :name, :files, :autocorrect, :comments
-    attr_reader :raw_lines
+  class Cop < Literal::Object
+
+    prop :raw_lines, _Array(String), reader: :public, default: -> { [] }
+    prop :files, _Array(String), reader: :public, writer: :public, default: -> { [] }
+    prop :comments, _Array(String), reader: :public, writer: :public, default: -> { [] }
+    prop :autocorrect, _Boolean, reader: :public, writer: :public, default: false
+    prop :offense_count, Integer, reader: :public, writer: :public, default: 0
+    prop :name, String, reader: :public, writer: :public, default: -> { "" }
+    prop :active, _Boolean, reader: :public, writer: :public, default: true
 
     def self.create_and_parse(raw_lines)
-      result = new(raw_lines)
+      result = new(raw_lines:)
       result.parse
       result
-    end
-
-    def initialize(raw_lines)
-      @raw_lines = raw_lines
-      @files = []
-      @autocorrect = false
-      @comments = []
     end
 
     def parse
@@ -63,6 +62,18 @@ module Rubomop
 
     def subtract!(offense_count)
       self.offense_count -= offense_count
+    end
+
+    def activate
+      self.active = true
+    end
+
+    def deactivate
+      self.active = false
+    end
+
+    def active?
+      active
     end
   end
 end

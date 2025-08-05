@@ -2,9 +2,10 @@ module Rubomop
   class Runner
     attr_accessor :number, :autocorrect_only, :run_rubocop
     attr_accessor :filename, :todo_file, :verbose, :config, :options_from_command_line
-    attr_accessor :only, :except, :blocklist
+    attr_accessor :only, :except, :blocklist, :name
 
     NUM_STRING = "Number of cleanups to perform (default: 10)"
+    NAME_STRING = "Name of cop to clean up. Choosing a name overrides choosing a number"
     AUTOCORRECT_STRING = "Only clean auto-correctable cops (default)"
     NO_AUTOCORRECT_STRING = "Clean all cops (not default)"
     RUBOCOP_STRING = "Run rubocop -aD after (default)"
@@ -27,6 +28,7 @@ module Rubomop
       @only = []
       @except = []
       @blocklist = []
+      @name = nil
     end
 
     def execute(args)
@@ -93,6 +95,10 @@ module Rubomop
           blocklist << value
           @options_from_command_line << "block"
         end
+        opts.on("--name=NAME", NAME_STRING) do |value|
+          self.name = value
+          @options_from_command_line << "name"
+        end
         opts.on("-h", "--help", "Prints this help") do
           puts opts
           exit
@@ -102,16 +108,26 @@ module Rubomop
     end
 
     def mop
-      RandomMop.new(
-        todo_file:,
-        number:,
-        autocorrect_only:,
-        verbose:,
-        run_rubocop:,
-        only:,
-        except:,
-        blocklist:
-      )
+      if name
+        NamedMop.new(
+          todo_file:,
+          name:,
+          verbose:,
+          run_rubocop:
+        )
+      else
+        RandomMop.new(
+          todo_file:,
+          number:,
+          autocorrect_only:,
+          verbose:,
+          run_rubocop:,
+          only:,
+          except:,
+          blocklist:
+        )
+      end
+
     end
 
     def run

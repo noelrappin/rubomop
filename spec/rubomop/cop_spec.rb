@@ -1,6 +1,6 @@
 module Rubomop
   RSpec.describe Cop do
-    subject(:cop) { Cop.new(lines) }
+    subject(:cop) { Cop.new(raw_lines: lines) }
 
     describe "with a basic set of lines" do
       let(:lines) do
@@ -98,7 +98,7 @@ module Rubomop
 
       it "ignores the exclude line" do
         cop.parse_one_line("  Exclude:")
-        expect(cop.name).to eq(nil)
+        expect(cop.name).to eq("")
       end
 
       it "parses a file line" do

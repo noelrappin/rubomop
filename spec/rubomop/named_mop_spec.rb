@@ -5,7 +5,7 @@ module Rubomop
 
     describe "happy path" do
       let(:mop) do
-        Rubomop::NamedMop(
+        Rubomop::NamedMop.new(
           todo_file:,
           name: "Lint/DuplicateMethods",
           verbose: false,
@@ -13,9 +13,9 @@ module Rubomop
         )
       end
 
-      xit "correctly updates objects" do
+      it "correctly updates objects" do
         mop.mop!
-        expect(todo_file).cops.map { _1.name }
+        expect(todo_file.active_cops.map { _1.name })
           .to eq(%w[Layout/ArgumentAlignment Lint/RedundantStringCoercion])
       end
     end
