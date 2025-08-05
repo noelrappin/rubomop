@@ -8,6 +8,5 @@ module Rubomop
     def mop!
       todo_file.cop_for(name).deactivate
     end
-
   end
 end

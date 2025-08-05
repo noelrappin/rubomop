@@ -1,6 +1,5 @@
 module Rubomop
   class Cop < Literal::Object
-
     prop :raw_lines, _Array(String), reader: :public, default: -> { [] }
     prop :files, _Array(String), reader: :public, writer: :public, default: -> { [] }
     prop :comments, _Array(String), reader: :public, writer: :public, default: -> { [] }

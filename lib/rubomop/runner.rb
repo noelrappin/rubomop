@@ -127,7 +127,6 @@ module Rubomop
           blocklist:
         )
       end
-
     end
 
     def run
