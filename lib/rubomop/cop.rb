@@ -52,7 +52,7 @@ module Rubomop
     def output_lines
       result = ["# Offense count: #{offense_count}"]
       result << "# This cop supports safe autocorrection (--autocorrect)." if autocorrect == :safe
-      result << "# # This cop supports unsafe autocorrection (--autocorrect-all)." if autocorrect == :unsafe
+      result << "# This cop supports unsafe autocorrection (--autocorrect-all)." if autocorrect == :unsafe
       result += comments
       result << "#{name}:"
       result << "  Exclude:"
