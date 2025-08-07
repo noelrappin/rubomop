@@ -77,15 +77,15 @@ module Rubomop
       describe "with an autocorrect and comments" do
         let(:lines) do
           <<~LINES
-          # Offense count: 2
-          # This cop supports unsafe autocorrection (--autocorrect-all).
-          # Configuration parameters: EnforcedStyle, IndentationWidth.
-          # SupportedStyles: with_first_argument, with_fixed_indentation
-          Layout/ArgumentAlignment:
-            Exclude:
-              - 'app/controllers/sample_controller.rb'
-              - 'app/controllers/another_controller.rb'
-        LINES
+            # Offense count: 2
+            # This cop supports unsafe autocorrection (--autocorrect-all).
+            # Configuration parameters: EnforcedStyle, IndentationWidth.
+            # SupportedStyles: with_first_argument, with_fixed_indentation
+            Layout/ArgumentAlignment:
+              Exclude:
+                - 'app/controllers/sample_controller.rb'
+                - 'app/controllers/another_controller.rb'
+          LINES
             .split("\n")
         end
 
