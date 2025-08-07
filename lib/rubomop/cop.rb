@@ -76,6 +76,15 @@ module Rubomop
       end
     end
 
+    def autocorrect_option
+      case autocorrect
+      when :safe then "a"
+      when :unsafe then "A"
+      else
+        ""
+      end
+    end
+
     def delete!(filename)
       files.delete(filename)
     end
