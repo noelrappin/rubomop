@@ -67,6 +67,15 @@ module Rubomop
       autocorrect.to_s.inquiry
     end
 
+    def autocorrect_verbiage
+      case autocorrect
+      when :safe then "safe autocorrect"
+      when :unsafe then "unsafe autocorrect"
+      else
+        "no autocorrect"
+      end
+    end
+
     def delete!(filename)
       files.delete(filename)
     end
