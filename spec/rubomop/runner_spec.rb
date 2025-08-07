@@ -56,6 +56,21 @@ module Rubomop
         expect(runner.filename).to eq("todo.yml")
       end
 
+      it "parses directory with -d" do
+        runner.parse(["-d/path/to/dir"])
+        expect(runner.directory).to eq("/path/to/dir")
+      end
+
+      it "parses directory with --directory" do
+        runner.parse(["--directory=/path/to/dir"])
+        expect(runner.directory).to eq("/path/to/dir")
+      end
+
+      it "parses directory with --dir" do
+        runner.parse(["--dir=/path/to/dir"])
+        expect(runner.directory).to eq("/path/to/dir")
+      end
+
       it "parses only list" do
         runner.parse(["--only=Lint*"])
         expect(runner.only).to eq(%w[Lint*])
@@ -102,6 +117,41 @@ module Rubomop
       it "chooses a named mop if there is a name" do
         runner.parse(["--name=Lint/RedundantStringCoercion"])
         expect(runner.mop).to be_a(NamedMop)
+      end
+    end
+
+    describe "directory handling" do
+      let(:test_dir) { "test_directory" }
+
+      before(:example) do
+        Dir.mkdir(test_dir) unless Dir.exist?(test_dir)
+        FileUtils.cp("spec/fixtures/sample_todo.yml", File.join(test_dir, ".rubocop_todo.yml"))
+        FileUtils.cp("spec/fixtures/sample_rubomop.yml", File.join(test_dir, ".rubomop.yml"))
+      end
+
+      after(:example) do
+        FileUtils.rm_rf(test_dir)
+      end
+
+      it "uses the specified directory for todo file" do
+        runner.parse(["-d#{test_dir}"])
+        runner.load_options([])
+        expect(runner.todo_file.filename).to eq(File.join(test_dir, ".rubocop_todo.yml"))
+      end
+
+      it "uses the specified directory for config file" do
+        runner.parse(["-d#{test_dir}"])
+        runner.load_options([])
+        expect(runner.number).to eq(20) # From the config file in test directory
+      end
+
+      it "defaults to current directory" do
+        expect(runner.directory).to eq(".")
+      end
+
+      it "creates full paths correctly" do
+        runner.parse(["-d#{test_dir}", "-fcustom.yml"])
+        expect(runner.send(:full_path, runner.filename)).to eq(File.join(test_dir, "custom.yml"))
       end
     end
 

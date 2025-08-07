@@ -1,7 +1,8 @@
 ## [1.0.0] - 7/31/2025
 
 - Allow for a second run type that removes a specific cop from the todo
-- create an assistant to loop through cleanup
+- Allow for running the cleanup on a different directory
+- Allow for the difference between safe and unsafe autocorrect
 - Drop support for Ruby 3.1 and lower
 
 ## [0.3.0] - 2022-08-12

@@ -14,7 +14,7 @@ module Rubomop
     end
 
     def accept?(delete_option)
-      return false if autocorrect_only && !delete_option.cop.autocorrect
+      return false if autocorrect_only && !delete_option.cop.any_autocorrect?
       unless except.empty?
         return except.none? { delete_option.cop.name.include?(_1) }
       end

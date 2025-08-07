@@ -3,7 +3,7 @@ module Rubomop
     prop :raw_lines, _Array(String), reader: :public, default: -> { [] }
     prop :files, _Array(String), reader: :public, writer: :public, default: -> { [] }
     prop :comments, _Array(String), reader: :public, writer: :public, default: -> { [] }
-    prop :autocorrect, _Boolean, reader: :public, writer: :public, default: false
+    prop :autocorrect, _Nilable(Symbol), reader: :public, writer: :public, default: :none
     prop :offense_count, Integer, reader: :public, writer: :public, default: 0
     prop :name, String, reader: :public, writer: :public, default: -> { "" }
     prop :active, _Boolean, reader: :public, writer: :public, default: true
@@ -21,7 +21,8 @@ module Rubomop
     OFFENSE_COUNT_REGEX = /\A# Offense count: (\d*)/
     COP_NAME_REGEX = /\A(.*):/
     FILE_NAME_REGEX = /- '(.*)'/
-    AUTOCORRECT_REGEX = /\A# Cop supports --auto-correct./
+    SAFE_AUTOCORRECT_REGEX = /\A# This cop supports safe autocorrection/
+    UNSAFE_AUTOCORRECT_REGEX = /\A# This cop supports unsafe autocorrection/
     GENERAL_COMMENT_REGEX = /\A#/
     EXCLUDE_REGEX = /Exclude:/
 
@@ -29,8 +30,10 @@ module Rubomop
       case line
       when OFFENSE_COUNT_REGEX
         self.offense_count = line.match(OFFENSE_COUNT_REGEX)[1].to_i
-      when AUTOCORRECT_REGEX
-        self.autocorrect = true
+      when SAFE_AUTOCORRECT_REGEX
+        self.autocorrect = :safe
+      when UNSAFE_AUTOCORRECT_REGEX
+        self.autocorrect = :unsafe
       when GENERAL_COMMENT_REGEX
         comments << line.chomp
       when EXCLUDE_REGEX
@@ -48,11 +51,20 @@ module Rubomop
 
     def output_lines
       result = ["# Offense count: #{offense_count}"]
-      result << "# Cop supports --auto-correct." if autocorrect
+      result << "# This cop supports safe autocorrection (--autocorrect)." if autocorrect == :safe
+      result << "# # This cop supports unsafe autocorrection (--autocorrect-all)." if autocorrect == :unsafe
       result += comments
       result << "#{name}:"
       result << "  Exclude:"
       result + files.map { "    - '#{_1}'" }
+    end
+
+    def any_autocorrect?
+      autocorrect != :none
+    end
+
+    def autocorrect_inquiry
+      autocorrect.to_s.inquiry
     end
 
     def delete!(filename)

@@ -7,7 +7,7 @@
 # versions of RuboCop, may require this file to be generated again.
 
 # Offense count: 2
-# Cop supports --auto-correct.
+# This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: with_first_argument, with_fixed_indentation
 Layout/ArgumentAlignment:
@@ -16,7 +16,7 @@ Layout/ArgumentAlignment:
     - 'app/controllers/another_controller.rb'
 
 # Offense count: 3
-# Cop supports --auto-correct.
+# This cop supports safe autocorrection (--autocorrect).
 Lint/RedundantStringCoercion:
   Exclude:
     - 'app/controllers/three_controller.rb'

@@ -1,8 +1,7 @@
 module Rubomop
   class Runner
-    attr_accessor :number, :autocorrect_only, :run_rubocop
-    attr_accessor :filename, :todo_file, :verbose, :config, :options_from_command_line
-    attr_accessor :only, :except, :blocklist, :name
+    attr_accessor :number, :autocorrect_only, :run_rubocop, :filename, :todo_file, :verbose, :config,
+      :options_from_command_line, :only, :except, :blocklist, :name, :directory
 
     NUM_STRING = "Number of cleanups to perform (default: 10)"
     NAME_STRING = "Name of cop to clean up. Choosing a name overrides choosing a number"
@@ -15,6 +14,7 @@ module Rubomop
     ONLY_STRING = "String or regex of cops to limit removal do, can have multiple"
     EXCEPT_STRING = "String or regex of cops to not remove from, can have multiple"
     BLOCK_STRING = "String or regex of files to not touch, can have multiple"
+    DIRECTORY_STRING = "Directory to work in (default: current directory)"
 
     def initialize
       @number = 10
@@ -22,7 +22,8 @@ module Rubomop
       @run_rubocop = true
       @filename = ".rubocop_todo.yml"
       @config = ".rubomop.yml"
-      @todo_file = TodoFile.new(filename: @filename)
+      @directory = "."
+      @todo_file = TodoFile.new(filename: full_path(@filename))
       @verbose = true
       @options_from_command_line = []
       @only = []
@@ -39,13 +40,18 @@ module Rubomop
     def load_options(args)
       parse(args)
       load_from_file
+      # Recreate todo_file with the correct directory after options are loaded
+      @todo_file = TodoFile.new(filename: full_path(@filename))
     end
 
     def load_from_file
-      return unless File.exist?(config)
-      file_options = YAML.safe_load_file(config)
+      config_path = full_path(config)
+      return unless File.exist?(config_path)
+
+      file_options = YAML.safe_load_file(config_path)
       file_options.each do |key, value|
         next if options_from_command_line.include?(key)
+
         send("#{key.underscore}=", value) if respond_to?("#{key.underscore}=")
       end
     rescue Psych::Exception
@@ -82,6 +88,10 @@ module Rubomop
         opts.on("-cCONFIG_FILE", "--config=CONFIG_FILE", CONFIG_STRING) do |value|
           self.config = value
           @options_from_command_line << "config"
+        end
+        opts.on("-dDIRECTORY", "--directory=DIRECTORY", "--dir=DIRECTORY", DIRECTORY_STRING) do |value|
+          self.directory = value
+          @options_from_command_line << "directory"
         end
         opts.on("--only=ONLY", ONLY_STRING) do |value|
           only << value
@@ -130,16 +140,25 @@ module Rubomop
     end
 
     def run
-      self.todo_file = TodoFile.new(filename: filename)&.parse
+      self.todo_file = TodoFile.new(filename: full_path(filename))&.parse
       return if todo_file.nil?
+
       backup_existing_file
       mop.mop!
       todo_file&.save!
     end
 
     def backup_existing_file
-      FileUtils.rm("#{filename}.bak") if File.exist?("#{filename}.bak")
-      FileUtils.mv(filename, "#{filename}.bak")
+      filename_path = full_path(filename)
+      backup_path = "#{filename_path}.bak"
+      FileUtils.rm(backup_path) if File.exist?(backup_path)
+      FileUtils.mv(filename_path, backup_path)
+    end
+
+    private
+
+    def full_path(file_path)
+      File.join(directory, file_path)
     end
   end
 end

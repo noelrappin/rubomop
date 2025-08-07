@@ -18,7 +18,7 @@ module Rubomop
         cop.parse
         expect(cop.offense_count).to eq(2)
         expect(cop.name).to eq("Lint/DuplicateMethods")
-        expect(cop.autocorrect).to be_falsey
+        expect(cop.autocorrect_inquiry).to be_none
         expect(cop.files).to eq(%w[app/models/oops.rb app/models/another_oops.rb])
         expect(cop.comments).to eq([])
       end
@@ -34,7 +34,7 @@ module Rubomop
       let(:lines) do
         <<~LINES
           # Offense count: 2
-          # Cop supports --auto-correct.
+          # This cop supports safe autocorrection (--autocorrect).
           # Configuration parameters: EnforcedStyle, IndentationWidth.
           # SupportedStyles: with_first_argument, with_fixed_indentation
           Layout/ArgumentAlignment:
@@ -49,7 +49,7 @@ module Rubomop
         cop.parse
         expect(cop.offense_count).to eq(2)
         expect(cop.name).to eq("Layout/ArgumentAlignment")
-        expect(cop.autocorrect).to be_truthy
+        expect(cop.autocorrect_inquiry).to be_safe
         expect(cop.files).to eq(%w[app/controllers/sample_controller.rb app/controllers/another_controller.rb])
         expect(cop.comments).to eq(
           [
@@ -70,6 +70,38 @@ module Rubomop
         cop.parse
         cop.subtract!(1)
         expect(cop.offense_count).to eq(1)
+      end
+    end
+
+    describe "with an unsafe auto correct" do
+      describe "with an autocorrect and comments" do
+        let(:lines) do
+          <<~LINES
+          # Offense count: 2
+          # This cop supports unsafe autocorrection (--autocorrect-all).
+          # Configuration parameters: EnforcedStyle, IndentationWidth.
+          # SupportedStyles: with_first_argument, with_fixed_indentation
+          Layout/ArgumentAlignment:
+            Exclude:
+              - 'app/controllers/sample_controller.rb'
+              - 'app/controllers/another_controller.rb'
+        LINES
+            .split("\n")
+        end
+
+        it "parses the lines", :aggregate_failures do
+          cop.parse
+          expect(cop.offense_count).to eq(2)
+          expect(cop.name).to eq("Layout/ArgumentAlignment")
+          expect(cop.autocorrect_inquiry).to be_unsafe
+          expect(cop.files).to eq(%w[app/controllers/sample_controller.rb app/controllers/another_controller.rb])
+          expect(cop.comments).to eq(
+            [
+              "# Configuration parameters: EnforcedStyle, IndentationWidth.",
+              "# SupportedStyles: with_first_argument, with_fixed_indentation"
+            ]
+          )
+        end
       end
     end
 
