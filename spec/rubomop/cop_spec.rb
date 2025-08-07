@@ -105,6 +105,26 @@ module Rubomop
       end
     end
 
+    describe "with a set of key values that are not exclude" do
+      let(:lines) do
+        <<~LINES
+          # Offense count: 9
+          # This cop supports safe autocorrection (--autocorrect).
+          # Configuration parameters: .
+          # SupportedStyles: percent, brackets
+          Style/SymbolArray:
+            EnforcedStyle: percent
+            MinSize: 7
+        LINES
+          .split("\n")
+      end
+
+      it "parses the lines and returns itself", :aggregate_failures do
+        cop.parse
+        expect(cop.output_lines).to eq(lines)
+      end
+    end
+
     describe "parsing single lines" do
       let(:lines) { [] }
 

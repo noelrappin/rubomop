@@ -4,6 +4,7 @@
 - Allow for running the cleanup on a different directory
 - Allow for the difference between safe and unsafe autocorrect
 - Drop support for Ruby 3.1 and lower
+- Handles the case where Rubocop puts criteria and not exclusions in the to-do
 
 ## [0.3.0] - 2022-08-12
 

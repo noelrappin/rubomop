@@ -3,6 +3,7 @@ module Rubomop
     prop :raw_lines, _Array(String), reader: :public, default: -> { [] }
     prop :files, _Array(String), reader: :public, writer: :public, default: -> { [] }
     prop :comments, _Array(String), reader: :public, writer: :public, default: -> { [] }
+    prop :config_params, _Array(String), reader: :public, writer: :public, default: -> { [] }
     prop :autocorrect, _Nilable(Symbol), reader: :public, writer: :public, default: :none
     prop :offense_count, Integer, reader: :public, writer: :public, default: 0
     prop :name, String, reader: :public, writer: :public, default: -> { "" }
@@ -19,12 +20,13 @@ module Rubomop
     end
 
     OFFENSE_COUNT_REGEX = /\A# Offense count: (\d*)/
-    COP_NAME_REGEX = /\A(.*):/
+    COP_NAME_REGEX = /\A(\S.*):/
     FILE_NAME_REGEX = /- '(.*)'/
     SAFE_AUTOCORRECT_REGEX = /\A# This cop supports safe autocorrection/
     UNSAFE_AUTOCORRECT_REGEX = /\A# This cop supports unsafe autocorrection/
     GENERAL_COMMENT_REGEX = /\A#/
     EXCLUDE_REGEX = /Exclude:/
+    CONFIG_PARAM_REGEX = /\A\s\s(.*)/
 
     def parse_one_line(line)
       case line
@@ -42,6 +44,8 @@ module Rubomop
         self.name = line.match(COP_NAME_REGEX)[1]
       when FILE_NAME_REGEX
         files << line.match(FILE_NAME_REGEX)[1]
+      when CONFIG_PARAM_REGEX
+        config_params << line.match(CONFIG_PARAM_REGEX)[1]
       end
     end
 
@@ -55,8 +59,12 @@ module Rubomop
       result << "# This cop supports unsafe autocorrection (--autocorrect-all)." if autocorrect == :unsafe
       result += comments
       result << "#{name}:"
-      result << "  Exclude:"
-      result + files.map { "    - '#{_1}'" }
+      result += config_params.map { "  #{_1}" }
+      unless files.empty?
+        result << "  Exclude:"
+        result += files.map { "    - '#{_1}'" }
+      end
+      result
     end
 
     def any_autocorrect?
