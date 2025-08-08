@@ -2,8 +2,10 @@
 
 require "active_support/core_ext/array"
 require "active_support/core_ext/string/inflections"
+require "active_support/core_ext/string/inquiry"
 require "awesome_print"
 require "fileutils"
+require "literal"
 require "optparse"
 require "yaml"
 require "zeitwerk"

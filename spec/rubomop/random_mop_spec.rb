@@ -1,14 +1,23 @@
 module Rubomop
-  RSpec.describe Mop do
+  RSpec.describe RandomMop do
     let(:filename) { "spec/fixtures/sample_todo.yml" }
-    let(:todo) { TodoFile.new(filename: filename).parse }
+    let(:todo_file) { TodoFile.new(filename: filename).parse }
     subject(:mop) do
-      described_class.new(todo, 2, true, false, false, [], [], [])
+      described_class.new(
+        todo_file:,
+        number: 2,
+        autocorrect_only: true,
+        verbose: false,
+        run_rubocop: false,
+        only: [],
+        except: [],
+        blocklist: []
+      )
     end
 
     describe "deletion objects" do
       it "creates a delete option from a cop" do
-        cop = todo.cops.first
+        cop = todo_file.cops.first
         result = mop.delete_options_for(cop)
         expect(result).to have(2).items
         expect(result.first.cop).to eq(cop)
@@ -74,25 +83,25 @@ module Rubomop
 
       it "parses the result of a rubocop" do
         rubocop_string = "\nsomething\n\n1 file inspected, 14 offenses detected, 14 offenses corrected"
-        expect(thing_to_delete.parseIo(rubocop_string)).to eq(14)
+        expect(thing_to_delete.parse_io(rubocop_string)).to eq(14)
       end
 
       it "parses the result of a single error rubocop" do
         rubocop_string = "\nsomething\n\n1 file inspected, 1 offense detected, 1 offense corrected"
-        expect(thing_to_delete.parseIo(rubocop_string)).to eq(1)
+        expect(thing_to_delete.parse_io(rubocop_string)).to eq(1)
       end
 
       it "parses the result of bad result" do
         rubocop_string = "\nsomething\n\nglorp"
-        expect(thing_to_delete.parseIo(rubocop_string)).to eq(0)
+        expect(thing_to_delete.parse_io(rubocop_string)).to eq(0)
       end
     end
 
     describe "include / exclude of cops" do
       let(:good_cop) { Cop.create_and_parse(["Layout/ArgumentAlignment:"]) }
-      let(:good_cop_option) { Mop::DeleteOption.new(good_cop, "oops.rb") }
+      let(:good_cop_option) { RandomMop::DeleteOption.new(good_cop, "oops.rb") }
       let(:bad_cop) { Cop.create_and_parse(["Lint/DuplicateMethods:"]) }
-      let(:bad_cop_option) { Mop::DeleteOption.new(bad_cop, "") }
+      let(:bad_cop_option) { RandomMop::DeleteOption.new(bad_cop, "") }
 
       it "when include is set to a string, match based on include" do
         mop.autocorrect_only = false
@@ -134,7 +143,7 @@ module Rubomop
         mop.autocorrect_only = false
         mop.only = %w[Layout/ArgumentAlignment]
         expect(mop.accept?(good_cop_option)).to be_truthy
-        mop.block = %w[oops.rb]
+        mop.blocklist = %w[oops.rb]
         expect(mop.accept?(good_cop_option)).to be_falsey
       end
 
@@ -142,7 +151,7 @@ module Rubomop
         mop.autocorrect_only = false
         mop.only = %w[Layout/ArgumentAlignment]
         expect(mop.accept?(good_cop_option)).to be_truthy
-        mop.block = %w[oops]
+        mop.blocklist = %w[oops]
         expect(mop.accept?(good_cop_option)).to be_falsey
       end
     end

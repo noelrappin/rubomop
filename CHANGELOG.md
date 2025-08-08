@@ -1,8 +1,14 @@
-## [Unreleased]
+## [1.0.0] - 7/31/2025
+
+- Allow for a second run type that removes a specific cop from the todo
+- Allow for running the cleanup on a different directory
+- Allow for the difference between safe and unsafe autocorrect
+- Drop support for Ruby 3.1 and lower
+- Handles the case where Rubocop puts criteria and not exclusions in the to-do
 
 ## [0.3.0] - 2022-08-12
 
-- More accurately udpate offense count in todo file after running rubocop
+- More accurately update offense count in todo file after running rubocop
 
 ## [0.2.0] - 2022-07-22
 

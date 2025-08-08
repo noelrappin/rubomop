@@ -56,6 +56,21 @@ module Rubomop
         expect(runner.filename).to eq("todo.yml")
       end
 
+      it "parses directory with -d" do
+        runner.parse(["-d/path/to/dir"])
+        expect(runner.directory).to eq("/path/to/dir")
+      end
+
+      it "parses directory with --directory" do
+        runner.parse(["--directory=/path/to/dir"])
+        expect(runner.directory).to eq("/path/to/dir")
+      end
+
+      it "parses directory with --dir" do
+        runner.parse(["--dir=/path/to/dir"])
+        expect(runner.directory).to eq("/path/to/dir")
+      end
+
       it "parses only list" do
         runner.parse(["--only=Lint*"])
         expect(runner.only).to eq(%w[Lint*])
@@ -78,12 +93,65 @@ module Rubomop
 
       it "parses block list" do
         runner.parse(["--block=oops*"])
-        expect(runner.block).to eq(%w[oops*])
+        expect(runner.blocklist).to eq(%w[oops*])
       end
 
       it "parses block list with multiples" do
         runner.parse(%w[--block=oops* --block=controller*])
-        expect(runner.block).to eq(%w[oops* controller*])
+        expect(runner.blocklist).to eq(%w[oops* controller*])
+      end
+
+      it "parses the name" do
+        runner.parse(["--name=Lint/RedundantStringCoercion"])
+        expect(runner.name).to eq("Lint/RedundantStringCoercion")
+        expect(runner.mop.name).to eq("Lint/RedundantStringCoercion")
+      end
+    end
+
+    describe "Mop choice" do
+      it "chooses a random mop if there is no name" do
+        runner.parse(["-n2"])
+        expect(runner.mop).to be_a(RandomMop)
+      end
+
+      it "chooses a named mop if there is a name" do
+        runner.parse(["--name=Lint/RedundantStringCoercion"])
+        expect(runner.mop).to be_a(NamedMop)
+      end
+    end
+
+    describe "directory handling" do
+      let(:test_dir) { "test_directory" }
+
+      before(:example) do
+        Dir.mkdir(test_dir) unless Dir.exist?(test_dir)
+        FileUtils.cp("spec/fixtures/sample_todo.yml", File.join(test_dir, ".rubocop_todo.yml"))
+        FileUtils.cp("spec/fixtures/sample_rubomop.yml", File.join(test_dir, ".rubomop.yml"))
+      end
+
+      after(:example) do
+        FileUtils.rm_rf(test_dir)
+      end
+
+      it "uses the specified directory for todo file" do
+        runner.parse(["-d#{test_dir}"])
+        runner.load_options([])
+        expect(runner.todo_file.filename).to eq(File.join(test_dir, ".rubocop_todo.yml"))
+      end
+
+      it "uses the specified directory for config file" do
+        runner.parse(["-d#{test_dir}"])
+        runner.load_options([])
+        expect(runner.number).to eq(20) # From the config file in test directory
+      end
+
+      it "defaults to current directory" do
+        expect(runner.directory).to eq(".")
+      end
+
+      it "creates full paths correctly" do
+        runner.parse(["-d#{test_dir}", "-fcustom.yml"])
+        expect(runner.send(:full_path, runner.filename)).to eq(File.join(test_dir, "custom.yml"))
       end
     end
 
@@ -113,8 +181,8 @@ module Rubomop
       end
 
       it "saves a file" do
-        runner.todo = TodoFile.new(filename: ".rubocop_todo.yml").parse
-        runner.todo.save!
+        runner.todo_file = TodoFile.new(filename: ".rubocop_todo.yml").parse
+        runner.todo_file.save!
         expect(File.exist?(".rubocop_todo.yml")).to be_truthy
       end
     end

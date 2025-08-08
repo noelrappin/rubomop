@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require "rubomop"
-# require_relative "../lib/rubomop" # when running locally
+require_relative "../lib/rubomop"
 
 Rubomop::Runner.new.execute(ARGV)

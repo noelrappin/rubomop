@@ -1,19 +1,18 @@
 module Rubomop
-  class Cop
-    attr_accessor :offense_count, :name, :files, :autocorrect, :comments
-    attr_reader :raw_lines
+  class Cop < Literal::Object
+    prop :raw_lines, _Array(String), reader: :public, default: -> { [] }
+    prop :files, _Array(String), reader: :public, writer: :public, default: -> { [] }
+    prop :comments, _Array(String), reader: :public, writer: :public, default: -> { [] }
+    prop :config_params, _Array(String), reader: :public, writer: :public, default: -> { [] }
+    prop :autocorrect, _Nilable(Symbol), reader: :public, writer: :public, default: :none
+    prop :offense_count, Integer, reader: :public, writer: :public, default: 0
+    prop :name, String, reader: :public, writer: :public, default: -> { "" }
+    prop :active, _Boolean, reader: :public, writer: :public, default: true
 
     def self.create_and_parse(raw_lines)
-      result = new(raw_lines)
+      result = new(raw_lines:)
       result.parse
       result
-    end
-
-    def initialize(raw_lines)
-      @raw_lines = raw_lines
-      @files = []
-      @autocorrect = false
-      @comments = []
     end
 
     def parse
@@ -21,18 +20,22 @@ module Rubomop
     end
 
     OFFENSE_COUNT_REGEX = /\A# Offense count: (\d*)/
-    COP_NAME_REGEX = /\A(.*):/
+    COP_NAME_REGEX = /\A(\S.*):/
     FILE_NAME_REGEX = /- '(.*)'/
-    AUTOCORRECT_REGEX = /\A# Cop supports --auto-correct./
+    SAFE_AUTOCORRECT_REGEX = /\A# This cop supports safe autocorrection/
+    UNSAFE_AUTOCORRECT_REGEX = /\A# This cop supports unsafe autocorrection/
     GENERAL_COMMENT_REGEX = /\A#/
     EXCLUDE_REGEX = /Exclude:/
+    CONFIG_PARAM_REGEX = /\A\s\s(.*)/
 
     def parse_one_line(line)
       case line
       when OFFENSE_COUNT_REGEX
         self.offense_count = line.match(OFFENSE_COUNT_REGEX)[1].to_i
-      when AUTOCORRECT_REGEX
-        self.autocorrect = true
+      when SAFE_AUTOCORRECT_REGEX
+        self.autocorrect = :safe
+      when UNSAFE_AUTOCORRECT_REGEX
+        self.autocorrect = :unsafe
       when GENERAL_COMMENT_REGEX
         comments << line.chomp
       when EXCLUDE_REGEX
@@ -41,6 +44,8 @@ module Rubomop
         self.name = line.match(COP_NAME_REGEX)[1]
       when FILE_NAME_REGEX
         files << line.match(FILE_NAME_REGEX)[1]
+      when CONFIG_PARAM_REGEX
+        config_params << line.match(CONFIG_PARAM_REGEX)[1]
       end
     end
 
@@ -50,11 +55,42 @@ module Rubomop
 
     def output_lines
       result = ["# Offense count: #{offense_count}"]
-      result << "# Cop supports --auto-correct." if autocorrect
+      result << "# This cop supports safe autocorrection (--autocorrect)." if autocorrect == :safe
+      result << "# This cop supports unsafe autocorrection (--autocorrect-all)." if autocorrect == :unsafe
       result += comments
       result << "#{name}:"
-      result << "  Exclude:"
-      result + files.map { "    - '#{_1}'"}
+      result += config_params.map { "  #{_1}" }
+      unless files.empty?
+        result << "  Exclude:"
+        result += files.map { "    - '#{_1}'" }
+      end
+      result
+    end
+
+    def any_autocorrect?
+      autocorrect != :none
+    end
+
+    def autocorrect_inquiry
+      autocorrect.to_s.inquiry
+    end
+
+    def autocorrect_verbiage
+      case autocorrect
+      when :safe then "safe autocorrect"
+      when :unsafe then "unsafe autocorrect"
+      else
+        "no autocorrect"
+      end
+    end
+
+    def autocorrect_option
+      case autocorrect
+      when :safe then "a"
+      when :unsafe then "A"
+      else
+        ""
+      end
     end
 
     def delete!(filename)
@@ -63,6 +99,18 @@ module Rubomop
 
     def subtract!(offense_count)
       self.offense_count -= offense_count
+    end
+
+    def activate
+      self.active = true
+    end
+
+    def deactivate
+      self.active = false
+    end
+
+    def active?
+      active
     end
   end
 end

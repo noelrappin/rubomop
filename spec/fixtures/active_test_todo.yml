@@ -15,12 +15,6 @@ Layout/ArgumentAlignment:
     - 'app/controllers/sample_controller.rb'
     - 'app/controllers/another_controller.rb'
 
-# Offense count: 2
-Lint/DuplicateMethods:
-  Exclude:
-    - 'app/models/oops.rb'
-    - 'app/models/another_oops.rb'
-
 # Offense count: 3
 # This cop supports safe autocorrection (--autocorrect).
 Lint/RedundantStringCoercion:

@@ -14,10 +14,18 @@ module Rubomop
       self
     end
 
+    def cop_for(name)
+      cops.select { _1.name == name }.first
+    end
+
+    def active_cops
+      cops.select { _1.active? }
+    end
+
     def output_lines
       result = header.map(&:chomp)
       result << ""
-      cops.each do |cop|
+      active_cops.each do |cop|
         result += cop.output_lines
         result << ""
       end
