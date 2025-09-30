@@ -1,3 +1,6 @@
+## [1.0.1] - 9/30/2025
+- remove awesome_print from runtime dependency
+
 ## [1.0.0] - 7/31/2025
 
 - Allow for a second run type that removes a specific cop from the todo
