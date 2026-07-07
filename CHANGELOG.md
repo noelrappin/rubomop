@@ -1,3 +1,7 @@
+## [1.1.1] 7/7/2026
+
+- Reinstate Ruby 3.2 support
+
 ## [1.1.0] 6/2/2026
 
 - Drop Ruby 3.2 support

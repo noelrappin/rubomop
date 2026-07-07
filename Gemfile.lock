@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubomop (1.1.0)
+    rubomop (1.1.1)
       activesupport (>= 7.0)
       date_by_example (>= 0.1)
       literal
