@@ -1,3 +1,8 @@
+## [1.1.0] 6/2/2026
+
+- Drop Ruby 3.2 support
+- Unpin zeitwerk
+
 ## [1.0.1] - 9/30/2025
 - remove awesome_print from runtime dependency
 
